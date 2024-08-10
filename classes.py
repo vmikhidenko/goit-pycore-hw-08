@@ -1,7 +1,7 @@
 import re
 from datetime import datetime, timedelta
 from collections import UserDict
-import pickle
+import pickle # pickle module imported
 
 class Field:
     def __init__(self, value=None):
@@ -125,11 +125,11 @@ class AddressBook(UserDict):
 
         return upcoming_birthdays_list
     
-def save_data(book, filename="addressbook.pkl"):
+def save_data(book, filename="addressbook.pkl"): # function to serialize added
     with open(filename, "wb") as f:
         pickle.dump(book, f)
 
-def load_data(filename="addressbook.pkl"):
+def load_data(filename="addressbook.pkl"): # function to deserialize added
     try:
         with open(filename, "rb") as f:
             return pickle.load(f)
@@ -224,7 +224,7 @@ def birthdays(args, book: AddressBook):
         return "No upcoming birthdays in the next week."
 
 def main():
-    book = load_data()
+    book = load_data()  # loading an existing address book
     print("Welcome to the assistant bot!")
     
     while True:
@@ -232,7 +232,7 @@ def main():
         command, args = parse_input(user_input)
 
         if command in ["close", "exit"]:
-            save_data(book)
+            save_data(book) # making sure to save address book before exit
             print("Goodbye!")
             break
 
