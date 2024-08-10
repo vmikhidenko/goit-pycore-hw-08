@@ -1,6 +1,7 @@
 import re
 from datetime import datetime, timedelta
 from collections import UserDict
+import pickle
 
 class Field:
     def __init__(self, value=None):
@@ -23,7 +24,7 @@ class Phone(Field):
             self.value = normalized_value
             return True
         else:
-            raise ValueError("Phone number must be exactly 10 digits")
+            raise ValueError("Phone number must be exactly 10 digits.")
 
 class Birthday(Field):
     def __init__(self, value=None):
@@ -89,11 +90,11 @@ class Record:
 class AddressBook(UserDict):
     def add_record(self, record):
         if not isinstance(record, Record):
-            raise ValueError("Value must be an instance of Record")
+            raise ValueError("Value must be an instance of Record.")
         self.data[record.name.value] = record
         
     def find(self, name):
-        return self.data.get(name, None)
+        return self.data.get(name)
 
     def delete(self, name):
         if name in self.data:
@@ -123,6 +124,17 @@ class AddressBook(UserDict):
                     })
 
         return upcoming_birthdays_list
+    
+def save_data(book, filename="addressbook.pkl"):
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+def load_data(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()
 
 def parse_input(user_input):
     cmd, *args = user_input.split(maxsplit=1)
@@ -137,7 +149,7 @@ def input_error(func):
         except KeyError:
             return "Enter user name."
         except ValueError:
-            return "Enter the argument for the command"
+            return "Enter the argument for the command."
         except IndexError:
             return "Enter user name."
     return inner
@@ -212,7 +224,7 @@ def birthdays(args, book: AddressBook):
         return "No upcoming birthdays in the next week."
 
 def main():
-    book = AddressBook()
+    book = load_data()
     print("Welcome to the assistant bot!")
     
     while True:
@@ -220,7 +232,8 @@ def main():
         command, args = parse_input(user_input)
 
         if command in ["close", "exit"]:
-            print("Good bye!")
+            save_data(book)
+            print("Goodbye!")
             break
 
         elif command == "hello":
